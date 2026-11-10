@@ -1,0 +1,65 @@
+# Rebuilds the profile: fetches GitHub data, regenerates every plate and the
+# README, and commits only when the output actually changed.
+#
+# Loop safety: commits made with GITHUB_TOKEN never trigger new workflow runs,
+# and the push trigger ignores generated paths anyway.
+name: profile
+
+on:
+  schedule:
+    - cron: '17 4 * * *' # daily, off the hour to avoid the top-of-hour queue
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'profile.config.ts'
+      - 'src/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/profile.yml'
+
+permissions:
+  contents: write # commit regenerated assets; nothing else
+
+concurrency:
+  group: profile-build
+  cancel-in-progress: false # never interrupt a run that may be pushing
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+        env:
+          # Read-only use: GraphQL contribution calendar and public repo list.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate assets
+        run: npm run check
+
+      - name: Commit if changed
+        run: |
+          git add -A README.md assets data
+          if git diff --cached --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "chore(profile): regenerate assets [skip ci]"
+          git push
