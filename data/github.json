@@ -3,7 +3,7 @@
  "login": "DociPRO1",
  "updated": "2026-11-10",
  "source": {
-  "calendar": "html",
+  "calendar": "graphql",
   "repos": "rest"
  },
  "calendar": [
@@ -1473,7 +1473,7 @@
   },
   {
    "date": "2026-11-10",
-   "count": 4
+   "count": 5
   }
  ],
  "repos": [
@@ -1483,11 +1483,11 @@
    "description": null,
    "url": "https://github.com/DociPRO1/DociPRO1",
    "homepage": null,
-   "language": null,
+   "language": "TypeScript",
    "topics": [],
    "stars": 0,
    "forks": 0,
-   "pushedAt": "2026-11-10T09:06:34Z",
+   "pushedAt": "2026-11-10T10:04:23Z",
    "isFork": false,
    "isArchived": false
   }
