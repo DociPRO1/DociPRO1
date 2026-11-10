@@ -42,16 +42,18 @@ Everything textual lives in `profile.config.ts`:
 
 | Field | Used in |
 | --- | --- |
-| `name`, `role`, `tagline`, `focus`, `code` | Hero |
-| `intro` | 01 Introduction |
-| `layers`, `spans` | Hero stations, 02 Expertise stack, 03 matrix columns |
-| `stack` | 03 Technology ecosystem: *where* each technology is used, never how well |
+| `name`, `role`, `tagline` | Short typographic hero |
+| `intro.statement`, `intro.continuation` | One short description below the tagline |
+| `stack` | Inline technology names below the introduction |
 | `projects` | Selected work: pinned slugs first, then the best public repos (`auto`) |
-| `links` | Connect plate and the plain-text links under it |
+| `links` | Plain-text links below the profile |
 
-Section numbers are assigned automatically. The *Selected work* section only
-appears once there is at least one eligible public repository; there are none
-today, so it is omitted rather than filled with placeholders.
+The profile has no visible section numbers, skill diagrams or activity counters.
+The *Selected work* section appears only when eligible public repositories are
+available, with at most two projects by default. The older optional modules
+remain in `src/modules/` but are not included by `resolveModules`. Their
+`focus`, `code`, `intro.facts`, `layers` and `spans` configuration is retained
+for compatibility and does not appear in the current layout.
 
 ## Automation
 
@@ -89,12 +91,9 @@ that:
   OS and in the mobile app, and each glyph can be animated. Kerning comes
   from the font's GPOS table through a small parser (`src/engine/gpos.ts`),
   because opentype.js does not read Plex's extension-wrapped lookups.
-- **Animation** uses CSS inside each SVG, which works for `<img>`-embedded
-  SVGs. Every element's resting style is its final state, and animations only
-  play *from* an offset. `prefers-reduced-motion` disables all motion, and
-  `assets/hero.static.*.svg` are motion-free renders. Browsers pause
-  animations in off-screen images and play them when they scroll into view,
-  so each plate reveals itself as the reader reaches it.
+- **Static composition.** The current profile renders immediately without
+  animation. The engine still supports CSS motion and `prefers-reduced-motion`
+  for optional modules. `assets/hero.static.*.svg` remain available for docs.
 - **Light/dark × desktop/mobile.** GitHub wraps README pictures in
   `<themed-picture>`. When a user forces a theme, it replaces the **whole**
   `media` attribute of any `<source>` mentioning `prefers-color-scheme`, so a

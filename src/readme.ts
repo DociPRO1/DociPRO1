@@ -52,7 +52,6 @@ export interface ReadmeParts {
   links: { label: string; url: string }[];
   /** Hidden-from-layout text summary for search engines and screen readers. */
   summary: string;
-  repoNote: string;
 }
 
 export function composeReadme(p: ReadmeParts): string {
@@ -64,11 +63,9 @@ export function composeReadme(p: ReadmeParts): string {
     out.push('');
   }
   if (p.links.length) {
-    out.push(`<p align="center">${p.links.map((l) => `<a href="${esc(l.url)}"><code>${esc(l.label)}</code></a>`).join(' &nbsp;·&nbsp; ')}</p>`);
+    out.push(`<p>${p.links.map((l) => `<a href="${esc(l.url)}">${esc(l.label)}</a>`).join(' &nbsp;·&nbsp; ')}</p>`);
     out.push('');
   }
-  out.push(`<p align="center"><sub>${esc(p.repoNote)}</sub></p>`);
-  out.push('');
   out.push(`<!-- ${p.summary.replace(/--/g, '-')} -->`);
   out.push('');
   return out.join('\n');

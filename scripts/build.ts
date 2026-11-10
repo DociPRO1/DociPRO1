@@ -49,14 +49,11 @@ async function main() {
 
   console.log('▸ plates');
   const active = resolveModules(ctx);
-  let n = 0;
   for (const m of active) {
-    if (m.id !== 'hero' && m.section !== false) n++;
-    const index = String(n).padStart(2, '0');
     for (const layout of ['wide', 'compact'] as Layout[]) {
       for (const theme of ['dark', 'light'] as ThemeName[]) {
         const rel = asset(m.id, layout, theme);
-        const svg = m.render(ctx, { theme: THEMES[theme], layout, motion: true }, index);
+        const svg = m.render(ctx, { theme: THEMES[theme], layout, motion: true }, '');
         const bytes = write(rel, svg);
         expected.add(rel);
         if (theme === 'dark') console.log(`  ${rel.padEnd(42)} ${(bytes / 1024).toFixed(1)} KB`);
@@ -66,7 +63,7 @@ async function main() {
     if (m.id === 'hero') {
       for (const theme of ['dark', 'light'] as ThemeName[]) {
         const rel = `assets/hero.static.${theme}.svg`;
-        write(rel, m.render(ctx, { theme: THEMES[theme], layout: 'wide', motion: false }, index));
+        write(rel, m.render(ctx, { theme: THEMES[theme], layout: 'wide', motion: false }, ''));
         expected.add(rel);
       }
     }
@@ -82,8 +79,7 @@ async function main() {
   const readme = composeReadme({
     plates: active.map((m) => ({ id: m.id, alt: m.alt(ctx), href: m.href?.(ctx) })),
     links,
-    summary: `${config.name}, ${config.role}. ${config.tagline} ${config.intro.statement}, ${config.intro.continuation}`,
-    repoNote: 'Every visual on this page is generated from source in this repository and rebuilt daily by GitHub Actions.',
+    summary: [config.name, config.role, config.tagline, config.intro.statement, config.intro.continuation].filter(Boolean).join(' '),
   });
   write('README.md', readme);
   console.log('✓ done');

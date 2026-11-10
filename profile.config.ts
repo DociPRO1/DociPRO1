@@ -18,25 +18,18 @@ const config: ProfileConfig = {
   repository: 'DociPRO1/DociPRO1',
   name: 'Filip Doci',
   role: 'Software Engineer',
-  code: 'FD-01',
-  tagline: 'Software systems, engineered from silicon to screen.',
-  focus: ['Architecture', 'Cloud', 'Embedded'],
+  code: 'FD',
+  tagline: 'From interface to infrastructure.',
+  focus: ['Web & mobile', 'Backend', 'Cloud'],
 
   intro: {
-    statement: 'I design and build software systems across the full depth of the stack',
-    continuation:
-      'from firmware on microcontrollers, through device fleets and distributed services, to the cloud infrastructure and interfaces that operate them.',
-    facts: [
-      { label: 'Practice', value: 'Software architecture and full-stack delivery' },
-      { label: 'Range', value: 'Embedded firmware to cloud platforms' },
-      { label: 'Method', value: 'Explicit boundaries, measured trade-offs, automated delivery' },
-    ],
+    statement: 'I build web and mobile apps, APIs and cloud services.',
+    continuation: '',
+    facts: [],
   },
 
-  // The stack, bottom (L0) to top (L5). Each expertise domain lives on a layer.
+  // Internal domain mapping; layer IDs are not displayed on the profile.
   layers: [
-    { id: 'L0', name: 'Silicon', domain: 'Embedded Systems', scope: 'Firmware, microcontrollers, hardware interfaces' },
-    { id: 'L1', name: 'Edge', domain: 'IoT Systems', scope: 'Device fleets, telemetry, edge-to-cloud messaging' },
     { id: 'L2', name: 'Infrastructure', domain: 'Cloud Infrastructure', scope: 'Provisioning, networking, deployment pipelines' },
     { id: 'L3', name: 'Distribution', domain: 'Distributed Systems', scope: 'Event-driven services, messaging, consistency' },
     { id: 'L4', name: 'Services', domain: 'Backend Engineering', scope: 'APIs, data modelling, persistence, integration' },
@@ -45,7 +38,7 @@ const config: ProfileConfig = {
 
   // Disciplines that cut across layers.
   spans: [
-    { name: 'Software Architecture', from: 'L0', to: 'L5', scope: 'Decomposition, boundaries and trade-offs across every layer' },
+    { name: 'Software Architecture', from: 'L2', to: 'L5', scope: 'Clear boundaries between applications, services and infrastructure' },
     { name: 'Full Stack', from: 'L4', to: 'L5', scope: 'Services and interfaces delivered together' },
   ],
 
@@ -57,16 +50,15 @@ const config: ProfileConfig = {
     { name: 'React / Next.js', kind: 'UI framework', layers: ['L5'] },
     { name: 'React Native', kind: 'Mobile framework', layers: ['L5'] },
     { name: 'PostgreSQL', kind: 'Database', layers: ['L4'] },
-    { name: 'MQTT', kind: 'Protocol', layers: ['L0', 'L1', 'L3'] },
     { name: 'Docker', kind: 'Containers', layers: ['L2', 'L3'] },
-    { name: 'AWS', kind: 'Cloud platform', layers: ['L1', 'L2', 'L3'] },
+    { name: 'AWS', kind: 'Cloud platform', layers: ['L2', 'L3'] },
     { name: 'GitHub Actions', kind: 'CI / CD', layers: ['L2'] },
   ],
 
   projects: {
     featured: [],
     auto: true,
-    limit: 4,
+    limit: 2,
     // The profile repository (<login>/<login>) is always excluded automatically.
     exclude: [],
   },
