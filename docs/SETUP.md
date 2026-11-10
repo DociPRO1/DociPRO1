@@ -42,18 +42,18 @@ Everything textual lives in `profile.config.ts`:
 
 | Field | Used in |
 | --- | --- |
-| `name`, `role`, `tagline` | Short typographic hero |
-| `intro.statement`, `intro.continuation` | One short description below the tagline |
-| `stack` | Inline technology names below the introduction |
+| `name`, `role`, `tagline`, `intro.statement` | Animated hero and brief introduction |
+| `layers`, `spans` | Software domains in the hero and animated architecture diagram |
+| `stack` | Technology map, using domain names rather than numeric references |
 | `projects` | Selected work: pinned slugs first, then the best public repos (`auto`) |
-| `links` | Plain-text links below the profile |
+| `links` | Animated contact footer and plain-text links |
 
-The profile has no visible section numbers, skill diagrams or activity counters.
-The *Selected work* section appears only when eligible public repositories are
-available, with at most two projects by default. The older optional modules
-remain in `src/modules/` but are not included by `resolveModules`. Their
-`focus`, `code`, `intro.facts`, `layers` and `spans` configuration is retained
-for compatibility and does not appear in the current layout.
+The profile keeps five animated sections: introduction, expertise, technologies,
+GitHub activity and contact. There are no decorative section numbers or visible
+layer IDs. The introduction sits in the hero instead of repeating in a separate
+section. The activity chart includes four real metrics. *Selected work* appears
+only when eligible public repositories are available, with at most two projects
+by default. The standalone introduction module remains optional.
 
 ## Automation
 
@@ -91,9 +91,10 @@ that:
   OS and in the mobile app, and each glyph can be animated. Kerning comes
   from the font's GPOS table through a small parser (`src/engine/gpos.ts`),
   because opentype.js does not read Plex's extension-wrapped lookups.
-- **Static composition.** The current profile renders immediately without
-  animation. The engine still supports CSS motion and `prefers-reduced-motion`
-  for optional modules. `assets/hero.static.*.svg` remain available for docs.
+- **Animation.** CSS inside each SVG reveals the name, connects the software
+  domains, scans the technology map and traces real contribution activity.
+  The resting state remains readable. `prefers-reduced-motion` disables animation,
+  and `assets/hero.static.*.svg` remain available for docs without motion.
 - **Light/dark × desktop/mobile.** GitHub wraps README pictures in
   `<themed-picture>`. When a user forces a theme, it replaces the **whole**
   `media` attribute of any `<source>` mentioning `prefers-color-scheme`, so a

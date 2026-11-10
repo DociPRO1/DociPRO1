@@ -30,10 +30,10 @@ const config: ProfileConfig = {
 
   // Internal domain mapping; layer IDs are not displayed on the profile.
   layers: [
-    { id: 'L2', name: 'Infrastructure', domain: 'Cloud Infrastructure', scope: 'Provisioning, networking, deployment pipelines' },
-    { id: 'L3', name: 'Distribution', domain: 'Distributed Systems', scope: 'Event-driven services, messaging, consistency' },
-    { id: 'L4', name: 'Services', domain: 'Backend Engineering', scope: 'APIs, data modelling, persistence, integration' },
-    { id: 'L5', name: 'Interface', domain: 'Full Stack Development', scope: 'Web and mobile applications, end to end' },
+    { id: 'L2', name: 'Cloud', domain: 'Cloud Infrastructure', scope: 'Infrastructure and automated delivery' },
+    { id: 'L3', name: 'Systems', domain: 'Distributed Systems', scope: 'Events, messaging and service integration' },
+    { id: 'L4', name: 'APIs', domain: 'Backend Engineering', scope: 'APIs, databases and application logic' },
+    { id: 'L5', name: 'Apps', domain: 'Web & Mobile', scope: 'Interfaces for the web and mobile' },
   ],
 
   // Disciplines that cut across layers.

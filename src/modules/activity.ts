@@ -14,8 +14,6 @@ import type { TextStyle } from '../engine/type.ts';
 import type { Module, BuildContext, RenderTarget } from './context.ts';
 
 const fmtN = (n: number) => n.toLocaleString('en-US');
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const md = (d: string) => `${MONTHS[Number(d.slice(5, 7)) - 1]} ${d.slice(8, 10)}`;
 
 function niceMax(v: number): number {
   if (v <= 4) return 4;
@@ -26,15 +24,12 @@ function niceMax(v: number): number {
 
 function readouts(ctx: BuildContext) {
   const s = ctx.stats;
-  const busiest = s.weekday.some((v) => v > 0) ? WEEKDAYS[s.weekday.indexOf(Math.max(...s.weekday))]! : '—';
   const has = s.days.length > 0;
   return [
     { k: 'Contributions', v: has ? fmtN(s.total) : '—', u: 'last 12 months' },
     { k: 'Active days', v: has ? fmtN(s.activeDays) : '—', u: `of ${s.days.length || 365}` },
     { k: 'Longest streak', v: has ? String(s.longestStreak) : '—', u: 'days' },
     { k: 'Current streak', v: has ? String(s.currentStreak) : '—', u: 'days' },
-    { k: 'Peak week', v: s.peakWeek ? String(s.peakWeek.total) : '—', u: s.peakWeek ? `wk of ${md(s.peakWeek.start)}` : '' },
-    { k: 'Busiest day', v: busiest, u: 'by volume' },
   ];
 }
 
@@ -52,7 +47,7 @@ function render(ctx: BuildContext, target: RenderTarget, index: string): string 
     ...target,
   });
   const t = doc.theme;
-  let y = sectionHeader(doc, index, 'Activity', `last 12 months  /  synced ${ctx.snapshot.updated}`);
+  let y = sectionHeader(doc, index, 'On GitHub', 'Last 12 months');
   headerMotion(doc);
 
   // Readouts.

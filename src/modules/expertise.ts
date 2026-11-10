@@ -1,13 +1,4 @@
-/**
- * 02 · ENGINEERING EXPERTISE: the stack as an exploded isometric view.
- *
- * Each expertise domain is a slab in a six-layer stack (L0 Silicon at the
- * bottom, L5 Interface at the top). Cross-cutting disciplines are drawn as
- * what they are: Software Architecture is the envelope around the whole
- * stack, Full Stack is a bracket across the top two layers. A via runs
- * through every slab, and a pulse climbs it from silicon to screen, the
- * same signal as in the hero.
- */
+/** Animated software architecture, with four domains and no layer numbers. */
 import { SvgDoc, EASE, r2 } from '../engine/svg.ts';
 import { WIDTH } from '../engine/theme.ts';
 import { label, sectionHeader, headerMotion, layerMark, type LayerId } from '../engine/kit.ts';
@@ -69,7 +60,6 @@ function slab(doc: SvgDoc, g: StackGeo, i: number, layer: Layer, delay: number) 
       `<path d="${inset}" stroke="${t.line}" stroke-width="1" stroke-dasharray="2 3"/>` +
       // Mark projected onto the face: rotate/scale into the isometric plane.
       `<g transform="translate(${r2(mx)} ${r2(my)}) matrix(.894 .447 -.894 .447 0 0)">${layerMark(layer.id, 0, 0, isTop ? t.t1 : t.t2, 0.82, '', t.slabTop)}</g>` +
-      (doc.layout === 'wide' ? doc.type.text(layer.id, cx + w * 0.2, cy + h * 0.5 + 4, { ...label(t.t3, 11, 'mono500'), anchor: 'middle' }) : '') +
       `</g>`,
   );
   doc.style(`.sl${i}{animation:drop .9s ${EASE.out} ${r2(delay)}s backwards}`);
@@ -171,18 +161,14 @@ function rows(doc: SvgDoc, ctx: BuildContext, x: number, y: number, rowH: number
   layers.forEach((l, r) => {
     const i = layers.length - 1 - r;
     const y0 = y + r * rowH;
-    const idW = doc.type.measure(l.id, label(t.accent, 11, 'mono500'));
-    let g =
-      doc.type.text(l.id, x, y0 + 18, label(t.accent, 11, 'mono500')) +
-      doc.type.text(l.name, x + idW + 8, y0 + 18, { ...label(t.t3, 11, 'mono500'), tracking: 0.1 }) +
-      doc.type.text(l.domain, x, y0 + 42, domStyle);
+    let g = doc.type.text(l.domain, x, y0 + 24, domStyle);
     const scope = doc.type.wrap(l.scope, scopeStyle, maxW);
-    g += scope.map((s, j) => doc.type.text(s, x, y0 + 63 + j * 18, scopeStyle)).join('');
+    g += scope.map((s, j) => doc.type.text(s, x, y0 + 47 + j * 18, scopeStyle)).join('');
     if (leaderTo) {
       const [lx, ly] = leaderTo(i);
       const sx = x + Math.max(doc.type.measure(l.domain, domStyle), ...scope.map((s) => doc.type.measure(s, scopeStyle))) + 16;
       const startX = Math.max(sx, x + maxW + 12);
-      g += `<path d="M${r2(startX)} ${r2(y0 + 37)}H${r2(lx - 26)}L${r2(lx - 6)} ${r2(ly)}" stroke="${t.line2}" stroke-width="1" stroke-dasharray="1 3"/><circle cx="${r2(lx - 4)}" cy="${r2(ly)}" r="2" fill="${t.t3}"/>`;
+      g += `<path d="M${r2(startX)} ${r2(y0 + 24)}H${r2(lx - 26)}L${r2(lx - 6)} ${r2(ly)}" stroke="${t.line2}" stroke-width="1" stroke-dasharray="1 3"/><circle cx="${r2(lx - 4)}" cy="${r2(ly)}" r="2" fill="${t.t3}"/>`;
     }
     doc.add(`<g class="rw rw${i}">${g}</g>`);
     doc.style(`.rw${i}{animation:up .8s ${EASE.out} ${r2(0.3 + (layers.length - 1 - i) * 0.08)}s backwards}`);
@@ -199,25 +185,25 @@ function render(ctx: BuildContext, target: RenderTarget, index: string): string 
     width: W,
     height: 600,
     title: 'Engineering expertise',
-    desc: c.layers.map((l) => `${l.id} ${l.domain}: ${l.scope}`).join('. '),
+    desc: c.layers.map((l) => `${l.domain}: ${l.scope}`).join('. '),
     ...target,
   });
   const t = doc.theme;
-  let y = sectionHeader(doc, index, 'Engineering Expertise', `${c.layers.length} layers  /  ${c.spans.length} spans`);
+  let y = sectionHeader(doc, index, 'What I work on', '');
   headerMotion(doc);
   const n = c.layers.length;
   const idx = (id: LayerId) => c.layers.findIndex((l) => l.id === id);
 
   if (!compact) {
-    const rowH = 80;
+    const rowH = 70;
     const top = y + 40;
     const g: StackGeo = { cx: 742, w: 128, h: 64, T: 11, cy: [] };
     // Slab i aligns its left vertex with row (n-1-i)'s domain baseline.
-    for (let i = 0; i < n; i++) g.cy[i] = top + (n - 1 - i) * rowH + 37;
-    if (arch) envelope(doc, g, 16, arch.name, `${arch.from}–${arch.to}`, false);
+    for (let i = 0; i < n; i++) g.cy[i] = top + (n - 1 - i) * rowH + 24;
+    if (arch) envelope(doc, g, 16, arch.name, '', false);
     for (let i = 0; i < n; i++) slab(doc, g, i, c.layers[i]!, 0.35 + i * 0.1);
     via(doc, g, Math.round(g.cx + g.w * 0.58), 2.2);
-    if (fs) bracket(doc, g, idx(fs.from), idx(fs.to), g.cx + g.w + 30, fs.name, `${fs.from}–${fs.to}`);
+    if (fs) bracket(doc, g, idx(fs.from), idx(fs.to), g.cx + g.w + 30, fs.name, '');
     rows(doc, ctx, 0, top, rowH, 330, (i) => [g.cx - g.w, g.cy[i]!]);
     doc.height = g.cy[0]! + g.T + 16 * 0.9 + g.h + 16 + 8;
   } else {
@@ -225,14 +211,14 @@ function render(ctx: BuildContext, target: RenderTarget, index: string): string 
     const gap = 46;
     const top = y + 92;
     for (let i = 0; i < n; i++) g.cy[i] = top + (n - 1 - i) * gap;
-    if (arch) envelope(doc, g, 12, arch.name, `${arch.from}–${arch.to}`, true);
+    if (arch) envelope(doc, g, 12, arch.name, '', true);
     for (let i = 0; i < n; i++) slab(doc, g, i, c.layers[i]!, 0.3 + i * 0.09);
     via(doc, g, Math.round(g.cx + g.w * 0.58), 2.0);
-    if (fs) bracket(doc, g, idx(fs.from), idx(fs.to), g.cx + g.w + 22, fs.name, `${fs.from}–${fs.to}`);
+    if (fs) bracket(doc, g, idx(fs.from), idx(fs.to), g.cx + g.w + 22, fs.name, '');
     y = g.cy[0]! + g.h + g.T + 52;
     doc.add(`<path d="M0 ${y - 16.5}H${W}" stroke="${t.line}"/>`);
-    rows(doc, ctx, 0, y, 84, W);
-    doc.height = y + n * 84 - 12;
+    rows(doc, ctx, 0, y, 68, W);
+    doc.height = y + n * 68 - 8;
   }
   doc.style(
     `@keyframes drop{from{opacity:0;transform:translateY(-18px)}}`,
@@ -245,6 +231,6 @@ function render(ctx: BuildContext, target: RenderTarget, index: string): string 
 export const expertise: Module = {
   id: 'expertise',
   alt: (ctx) =>
-    `Engineering expertise, shown as a six-layer stack. ${ctx.config.layers.map((l) => `${l.id} ${l.name}: ${l.domain}, ${l.scope}.`).join(' ')} ${ctx.config.spans.map((s) => `${s.name} spans ${s.from} to ${s.to}: ${s.scope}.`).join(' ')}`,
+    `Software architecture, shown as a connected stack. ${ctx.config.layers.map((l) => `${l.domain}: ${l.scope}.`).join(' ')} ${ctx.config.spans.map((s) => `${s.name}: ${s.scope}.`).join(' ')}`,
   render,
 };

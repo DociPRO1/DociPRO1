@@ -1,18 +1,7 @@
-/**
- * 03 · TECHNOLOGY ECOSYSTEM: a bill of materials.
- *
- * Rows are technologies, columns are the stack's layers. A filled pad marks
- * a layer where the technology is used, and a trace joins a technology's
- * outermost layers to show how deep it reaches through the stack. This is a
- * map of where, never a score of how well, so there are no percentages and
- * no proficiency bars.
- *
- * Motion: a scan line sweeps L0→L5 on a loop and pads flash as it crosses
- * them, the same signal language as the hero and the stack.
- */
+/** Technology map with an animated scan and readable domain names. */
 import { SvgDoc, EASE, r2 } from '../engine/svg.ts';
 import { WIDTH } from '../engine/theme.ts';
-import { label, sectionHeader, headerMotion, layerMark } from '../engine/kit.ts';
+import { label, sectionHeader, headerMotion } from '../engine/kit.ts';
 import type { TextStyle } from '../engine/type.ts';
 import type { Module, BuildContext, RenderTarget } from './context.ts';
 
@@ -28,37 +17,27 @@ function render(ctx: BuildContext, target: RenderTarget, index: string): string 
     width: W,
     height: 500,
     title: 'Technology ecosystem',
-    desc: c.stack.map((s) => `${s.name} (${s.kind}): ${s.layers.join(', ')}`).join('. '),
+    desc: c.stack.map((s) => `${s.name} (${s.kind})`).join('. '),
     ...target,
   });
   const t = doc.theme;
-  let y = sectionHeader(doc, index, 'Technology Ecosystem', `${c.stack.length} components  /  bill of materials`);
+  let y = sectionHeader(doc, index, 'Technologies', '');
   headerMotion(doc);
 
   const layers = c.layers;
-  const colX0 = compact ? 262 : 520;
-  const colW = compact ? 30 : 80;
+  const colX0 = compact ? 250 : 520;
+  const colW = compact ? 46 : 120;
   const colCx = (j: number) => colX0 + j * colW + colW / 2;
-  const rowH = compact ? 50 : 38;
+  const rowH = compact ? 46 : 38;
 
-  // Column header: layer marks and ids.
   const hy = y + 4;
-  const tableTop = hy + (compact ? 40 : 50);
-  doc.add(doc.type.text('Ref', 0, hy + 30, label(t.t3, 11)));
-  if (!compact) {
-    doc.add(doc.type.text('Component', 56, hy + 30, label(t.t3, 11)));
-    doc.add(doc.type.text('Class', 300, hy + 30, label(t.t3, 11)));
-  } else {
-    doc.add(doc.type.text('Component', 44, hy + 30, label(t.t3, 11)));
-  }
-  layers.forEach((l, j) => {
-    const cx = colCx(j);
-    if (compact) {
-      doc.add(doc.type.text(l.id.slice(1), cx, hy + 30, { ...label(t.t3, 11, 'mono500'), anchor: 'middle' }));
-    } else {
-      doc.add(layerMark(l.id, cx, hy + 8, t.t2, 0.8, '', t.canvas));
-      doc.add(doc.type.text(l.id, cx, hy + 40, { ...label(t.t3, 11, 'mono500'), anchor: 'middle' }));
-    }
+  const tableTop = hy + 28;
+  doc.add(doc.type.text('Technology', 0, hy + 12, { font: 'sans400', size: 14, fill: t.t3 }));
+  if (!compact) doc.add(doc.type.text('Type', 310, hy + 12, { font: 'sans400', size: 14, fill: t.t3 }));
+  layers.forEach((layer, j) => {
+    doc.add(doc.type.text(layer.name, colCx(j), hy + 12, {
+      font: 'sans500', size: compact ? 11 : 14, fill: t.t2, anchor: 'middle',
+    }));
   });
   doc.add(`<path d="M0 ${tableTop - 0.5}H${W}" stroke="${t.line2}"/>`);
 
@@ -72,14 +51,13 @@ function render(ctx: BuildContext, target: RenderTarget, index: string): string 
   c.stack.forEach((tech, i) => {
     const ry = tableTop + i * rowH;
     const mid = ry + rowH / 2;
-    const ref = `T${String(i + 1).padStart(2, '0')}`;
-    let g = doc.type.text(ref, 0, mid + 4.5, label(t.t3, 11));
+    let g = '';
     if (compact) {
-      g += doc.type.text(tech.name, 44, mid - 3, nameStyle);
-      g += doc.type.text(tech.kind, 44, mid + 15, label(t.t3, 10.5));
+      g += doc.type.text(tech.name, 0, mid - 3, nameStyle);
+      g += doc.type.text(tech.kind, 0, mid + 15, { font: 'sans400', size: 12, fill: t.t3 });
     } else {
-      g += doc.type.text(tech.name, 56, mid + 6, nameStyle);
-      g += doc.type.text(tech.kind, 300, mid + 4.5, label(t.t3, 11));
+      g += doc.type.text(tech.name, 0, mid + 6, nameStyle);
+      g += doc.type.text(tech.kind, 310, mid + 5, { font: 'sans400', size: 14, fill: t.t3 });
     }
     // Reach trace between the outermost used layers.
     const js = tech.layers.map((id) => layers.findIndex((l) => l.id === id)).filter((j) => j >= 0).sort((a, b) => a - b);
@@ -100,22 +78,7 @@ function render(ctx: BuildContext, target: RenderTarget, index: string): string 
     }
   });
 
-  // Footer: components per layer.
-  const fy = tableBottom + (compact ? 24 : 28);
-  doc.add(doc.type.text(compact ? 'Per layer' : 'Components per layer', compact ? 44 : 56, fy, label(t.t3, 11)));
-  layers.forEach((l, j) => {
-    const count = c.stack.filter((s) => s.layers.includes(l.id)).length;
-    doc.add(doc.type.text(String(count), colCx(j), fy, { ...label(count ? t.t1 : t.t3, 12, 'mono500'), anchor: 'middle' }));
-  });
-  if (compact) {
-    // Legend for the numeric column headers.
-    const legend = layers.map((l) => `${l.id.slice(1)} ${l.name}`).join('   ');
-    const lines = doc.type.wrap(legend, label(t.t3, 10.5), W);
-    lines.forEach((ln, i) => doc.add(doc.type.text(ln, 0, fy + 30 + i * 17, label(t.t3, 10.5))));
-    doc.height = fy + 30 + lines.length * 17;
-  } else {
-    doc.height = fy + 12;
-  }
+  doc.height = tableBottom + 24;
 
   // Scan line.
   if (doc.motion) {
@@ -140,8 +103,8 @@ function render(ctx: BuildContext, target: RenderTarget, index: string): string 
 export const ecosystem: Module = {
   id: 'ecosystem',
   alt: (ctx) =>
-    `Technology ecosystem, as a bill of materials mapping each technology to the stack layers where it is used. ${ctx.config.stack
-      .map((s) => `${s.name}, ${s.kind}, used in ${s.layers.map((id) => `${id} ${ctx.config.layers.find((l) => l.id === id)?.name ?? ''}`).join(', ')}.`)
+    `Technologies and the software domains where I use them. ${ctx.config.stack
+      .map((s) => `${s.name}, ${s.kind}, used in ${s.layers.map((id) => `${ctx.config.layers.find((l) => l.id === id)?.name ?? ''}`).join(', ')}.`)
       .join(' ')}`,
   render,
 };

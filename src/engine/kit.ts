@@ -19,20 +19,17 @@ export const label = (fill: string, size = 12, font: TextStyle['font'] = 'mono40
 });
 
 /**
- * Section header: index, title, hairline, right-aligned metadata.
+ * Section header: title, hairline, right-aligned metadata. No decorative index.
  * Returns the y coordinate where content should start.
  */
-export function sectionHeader(doc: SvgDoc, index: string, title: string, meta: string, y = 0): number {
+export function sectionHeader(doc: SvgDoc, _index: string, title: string, meta: string, y = 0): number {
   const t = doc.theme;
   const compact = doc.layout === 'compact';
   const size = compact ? 13 : 13;
   const base = y + 16;
-  const idx = label(t.accent, size, 'mono500');
-  const ttl = label(t.t1, size, 'mono500');
-  const idxW = doc.type.measure(index, idx);
-  doc.add(doc.type.text(index, 0, base, idx));
-  doc.add(doc.type.text(title, idxW + 14, base, { ...ttl, tracking: 0.12 }));
-  const titleEnd = idxW + 14 + doc.type.measure(title, { ...ttl, tracking: 0.12 });
+  const ttl: TextStyle = { font: 'sans500', size: 20, fill: t.t1 };
+  doc.add(doc.type.text(title, 0, base, ttl));
+  const titleEnd = doc.type.measure(title, ttl);
   let lineEnd = doc.width;
   if (meta && !compact) {
     const m = label(t.t3, size);
